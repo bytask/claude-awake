@@ -12,6 +12,7 @@ set -euo pipefail
 SRC="$(cd "$(dirname "$0")" && pwd)"
 BIN_DIR="${BIN_DIR:-$HOME/.local/bin}"
 LABEL="${AWAKE_LABEL:-local.claude-awake.reap}"
+# 作者環境で使っていた旧ラベル。存在すれば install 時に停止・退避する（無い環境では無害）。
 LEGACY_LABELS=(com.task.claude-awake-reap)
 AGENT_DIR="$HOME/Library/LaunchAgents"
 SUDOERS_PATH=/etc/sudoers.d/claude-pmset
