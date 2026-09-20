@@ -1,0 +1,45 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "__BIN__ reap </dev/null >/dev/null 2>&1 &"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sid=$(jq -r '.session_id // \"unknown\"'); __BIN__ acquire \"$sid\" >/dev/null 2>&1 &"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sid=$(jq -r '.session_id // \"unknown\"'); __BIN__ release \"$sid\" >/dev/null 2>&1 &"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sid=$(jq -r '.session_id // \"unknown\"'); __BIN__ release \"$sid\" >/dev/null 2>&1 &"
+          }
+        ]
+      }
+    ]
+  }
+}

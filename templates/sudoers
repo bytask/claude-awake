@@ -1,0 +1,3 @@
+# claude-awake — 蓋閉じスリープの抑止トグルだけを NOPASSWD で許可する。
+# 許可しているのは pmset の disablesleep 0/1 のみで、他の pmset 操作は含まない。
+__USER__ ALL=(root) NOPASSWD: /usr/bin/pmset -a disablesleep 0, /usr/bin/pmset -a disablesleep 1
