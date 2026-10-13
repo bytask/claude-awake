@@ -34,7 +34,7 @@ alias claude='caffeinate -i claude'
 | サブコマンド | 呼ばれる場所 | 動作 |
 |---|---|---|
 | `acquire <sid>` | hook `UserPromptSubmit` | マーカー作成（処理開始） |
-| `release <sid>` | hook `Stop` / `SessionEnd` | マーカー削除（処理完了） |
+| `release <sid>` | hook `Stop` / `StopFailure` / `SessionEnd` | マーカー削除（処理完了。`StopFailure` は API エラーで手番が終わったとき） |
 | `reap` | hook `SessionStart`、launchd 5 分毎 | 3 時間超の孤児マーカーを掃除して再評価 |
 | `hold` / `unhold` | 手動 | セッションと無関係に `disablesleep=1` を維持 / 解除 |
 | `status` | 手動 | マーカー一覧と現在の `SleepDisabled` を表示 |

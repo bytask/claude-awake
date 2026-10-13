@@ -4,7 +4,7 @@
 # 参照カウント方式: 処理中セッションのマーカーファイルが 1 つでもあれば
 # disablesleep=1、0 になれば 0 に戻す。複数セッションの同時起動に対応する。
 #   acquire <sid>  処理開始 (UserPromptSubmit hook)
-#   release <sid>  処理完了 (Stop / SessionEnd hook)
+#   release <sid>  処理完了 (Stop / StopFailure / SessionEnd hook。StopFailure = API エラーで手番が終わったとき)
 #   reap           孤児マーカー掃除 + 再評価 (launchd / SessionStart)
 #   hold           手動ホールド (セッションと無関係に disablesleep=1 を維持。reap で消えない。旧 Capsomnia の代替)
 #   unhold         手動ホールド解除
@@ -23,11 +23,15 @@ mkdir -p "$AWAKE_DIR"
 
 # 排他ロック — flock は macOS に無いので mkdir のアトミック性を使う。
 # 最大 5 秒待って取れなければロック無しで続行 (競合時の取りこぼしは reap が回収)。
+# ロックを持ったまま殺されると残骸が残り、以後すべての呼び出しが 5 秒待ちになって
+# acquire / release の順序が入れ替わる (2026-10-13 に実例)。10 秒より古いロックは残骸とみなして捨てる。
 for _ in $(seq 1 100); do
   if mkdir "$LOCKDIR" 2>/dev/null; then
     trap 'rmdir "$LOCKDIR" 2>/dev/null' EXIT
     break
   fi
+  lock_age=$(( $(date +%s) - $(stat -f %m "$LOCKDIR" 2>/dev/null || date +%s) ))
+  [ "$lock_age" -gt 10 ] && rmdir "$LOCKDIR" 2>/dev/null
   sleep 0.05
 done
 
